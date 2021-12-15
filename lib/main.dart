@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,7 +20,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   BlocOverrides.runZoned(
         () {  runApp(MyApp());
-      // Use cubits...
+        HttpOverrides.global = MyHttpOverrides();
+
+
+          // Use cubits...
     },
     blocObserver: MyBlocObserver(),
   );
@@ -126,5 +131,13 @@ class MyApp extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext? context){
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
   }
 }
